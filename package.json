@@ -1,0 +1,24 @@
+{
+  "name": "stellar-arbitrage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@gabranches/helpers": "^1.0.4",
+    "axios": "^0.18.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^7.0.0",
+    "lodash": "^4.17.11",
+    "stellar-sdk": "^0.14.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
