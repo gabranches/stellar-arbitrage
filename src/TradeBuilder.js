@@ -71,28 +71,30 @@ module.exports = class TradeBuilder {
         amount: amount,
         available: sell.balance(sell.asset),
         price: sellSummary.weightedPrice,
-        priceUSD: sellRate * sellSummary.weightedPrice,
-        totalUSD: amount * sellRate * sellSummary.weightedPrice,
-        fee: amount * sellRate * sellSummary.weightedPrice * sell.fee,
+        fee: amount * sellSummary.weightedPrice * sell.fee,
       },
       buy: {
         asset: buy.asset,
         market: buy.tag,
-        amount: amount,
-        amountBase: amount * buySummary.weightedPrice,
+        amount:
+          (amount * sellSummary.weightedPrice * sellRate) /
+          buyRate /
+          buySummary.weightedPrice,
+        amountBase: (amount * sellSummary.weightedPrice * sellRate) / buyRate,
         available: buy.balance(buy.base),
         price: buySummary.weightedPrice,
-        priceUSD: buyRate * buySummary.weightedPrice,
-        totalUSD: amount * buyRate * buySummary.weightedPrice,
-        fee: amount * buyRate * buySummary.weightedPrice * buy.fee,
+        fee:
+          ((amount * sellSummary.weightedPrice * sellRate) /
+            buyRate /
+            buySummary.weightedPrice) *
+          buy.fee,
       },
       execute: true,
       profit: null,
       notes: [],
     }
     action.profit =
-      action.sell.totalUSD -
-      (action.buy.totalUSD + action.buy.fee + action.sell.fee)
+      action.buy.amount + action.buy.fee + action.sell.fee - action.sell.amount
     if (action.profit < 0) {
       action.execute = false
       action.notes.push('No profit.')
