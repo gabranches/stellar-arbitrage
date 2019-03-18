@@ -26,17 +26,18 @@ module.exports = class Arbitrage {
   trade() {
     return new TradeBuilder(this._markets, this._cmc)
   }
-  executeAll() {
+  execute(exec) {
     return new Promise(async (resolve, reject) => {
       try {
+        await this.init()
         const trade1 = this.trade()
           .sell(this._markets[0].tag)
           .buy(this._markets[1].tag)
-          .execute(false)
+          .execute(exec)
         const trade2 = this.trade()
           .sell(this._markets[1].tag)
           .buy(this._markets[0].tag)
-          .execute(false)
+          .execute(exec)
         await Promise.all([trade1, trade2])
         resolve()
       } catch (error) {

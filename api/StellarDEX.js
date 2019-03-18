@@ -3,7 +3,7 @@ const stellarAssets = require('../data/stellarAssets')
 const Exchange = require('./Exchange')
 
 module.exports = class StellarDex extends Exchange {
-  constructor(options) {
+  constructor(options = {}) {
     super(options)
     this._name = 'StellarDex'
     this._privateKey = process.env.STELLAR_PRIVATE_KEY
@@ -37,7 +37,7 @@ module.exports = class StellarDex extends Exchange {
         .accountId(this._publicKey)
         .call()
         .then(res => {
-          this._balances = (this.formatBalances(res.balances))
+          this._balances = this.formatBalances(res.balances)
           resolve()
         })
         .catch(error => {
@@ -51,7 +51,7 @@ module.exports = class StellarDex extends Exchange {
       newBal.push({
         asset: b.asset_type === 'native' ? 'XLM' : b.asset_code,
         balance: Number(b.balance),
-        available: b.balance - b.buying_liabilities - b.selling_liabilities
+        available: b.balance - b.buying_liabilities - b.selling_liabilities,
       })
     })
     return newBal
@@ -61,7 +61,7 @@ module.exports = class StellarDex extends Exchange {
     if (asset) return asset
     throw Error(`Could not find asset ${asset_code}`)
   }
-  limitOrder() {
+  limitOrder(order) {
     return new Promise(async (resolve, reject) => {
       const stellarAsset = this.getAsset(order.asset)
       const trade = {
@@ -147,10 +147,13 @@ module.exports = class StellarDex extends Exchange {
           .build()
         transaction.sign(this._sourceKeypair)
         const res = await this._server.submitTransaction(transaction)
-        console.log('Stellar transaction signed.')
-        resolve(res)
+        if (res._links.transaction.href) {
+          console.log('Stellar transaction signed.')
+          resolve(res)
+        } else {
+          reject(Error('Failed to sign Stellar transaction.'))
+        }
       } catch (error) {
-        console.log('Error signing Stellar transaction.')
         reject(error)
       }
     })

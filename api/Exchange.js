@@ -15,7 +15,9 @@ module.exports = class Exchange {
     return new Promise(async (resolve, reject) => {
       try {
         await this.fetchBalances()
+        this.logBalances()
         await this.fetchOrderBook()
+
         resolve()
       } catch (error) {
         reject(error)

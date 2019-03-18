@@ -31,13 +31,15 @@ module.exports = class TradeBuilder {
       const buyOrder = this.buildOrder('BUY', this._trade.buy)
       try {
         if (exec) {
-          console.log('EXECUTE')
           if (this._trade.execute) {
+            console.log('------------------------')
+            console.log('EXECUTE')
+            console.log('------------------------')
+            console.log(sellOrder)
+            console.log(buyOrder)
             const pS = this._sellMarket.limitOrder(sellOrder)
             const pB = this._buyMarket.limitOrder(buyOrder)
             await Promise.all([pS, pB])
-            console.log(sellOrder)
-            console.log(buyOrder)
           }
         }
         resolve()
@@ -50,7 +52,7 @@ module.exports = class TradeBuilder {
     return {
       type: type,
       asset: o.asset,
-      base: o.market.split('-')[0],
+      base: o.market.split('-')[1],
       amount: o.amount,
       price: o.price,
     }
@@ -78,17 +80,34 @@ module.exports = class TradeBuilder {
         asset: buy.asset,
         market: buy.tag,
         amount: amount,
-        available: buy.balance(buy.asset),
+        amountBase: amount * buySummary.weightedPrice,
+        available: buy.balance(buy.base),
         price: buySummary.weightedPrice,
         priceUSD: buyRate * buySummary.weightedPrice,
         totalUSD: amount * buyRate * buySummary.weightedPrice,
         fee: amount * buyRate * buySummary.weightedPrice * buy.fee,
       },
+      execute: true,
+      profit: null,
+      notes: [],
     }
     action.profit =
       action.sell.totalUSD -
       (action.buy.totalUSD + action.buy.fee + action.sell.fee)
-    action.execute = action.profit > 0 ? true : false
+    if (action.profit < 0) {
+      action.execute = false
+      action.notes.push('No profit.')
+    }
+    if (action.sell.available < action.sell.amount) {
+      action.execute = false
+      action.notes.push(`Insufficient ${action.sell.asset} to sell.`)
+    }
+    if (action.buy.available < action.buy.amountBase) {
+      action.execute = false
+      action.notes.push(
+        `Insufficient ${action.buy.market.split('-')[1]} to buy.`
+      )
+    }
     return action
   }
   logSummary() {

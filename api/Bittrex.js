@@ -3,7 +3,7 @@ const Crypto = require('crypto')
 const Exchange = require('./Exchange')
 
 module.exports = class Bittrex extends Exchange {
-  constructor(options) {
+  constructor(options = {}) {
     options.fee = 0.0025
     super(options)
     this._name = 'Bittrex'
@@ -37,7 +37,7 @@ module.exports = class Bittrex extends Exchange {
       const params = {
         apikey: this._publicKey,
         nonce: new Date().getTime(),
-        market: `${ordre.base}-${order.asset}`,
+        market: `${order.base}-${order.asset}`,
         quantity: order.amount,
         rate: order.price,
       }
@@ -51,7 +51,11 @@ module.exports = class Bittrex extends Exchange {
           },
         })
         .then(response => {
-          resolve(response.data)
+          if (response.data.success) {
+            resolve(response.data)
+          } else {
+            reject(Error('Failed to place order on Bittrex.'))
+          }
         })
         .catch(e => {
           console.error('Could not place buy limit order on Bittrex.')
