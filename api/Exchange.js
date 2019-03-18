@@ -128,6 +128,9 @@ module.exports = class Exchange {
   get balances() {
     return this._balances || Error('Balances not set.')
   }
+  get openOrders() {
+    return this._openOrders
+  }
   logBalances() {
     console.log('------------------------')
     console.log(`${this._name} Balances`)

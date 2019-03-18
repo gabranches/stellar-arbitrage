@@ -65,13 +65,7 @@ module.exports = class Bittrex extends Exchange {
   }
   fetchBalances() {
     return new Promise((resolve, reject) => {
-      const params = {
-        apikey: this._publicKey,
-        nonce: new Date().getTime(),
-      }
-      const url = `${this._apiUrl}/account/getbalances?${encodeQueryData(
-        params
-      )}`
+      const url = `${this._apiUrl}/account/getbalances?${this.privateParams}`
       axios
         .get(url, {
           headers: {
@@ -89,6 +83,32 @@ module.exports = class Bittrex extends Exchange {
           reject(error)
         })
     })
+  }
+  getOpenOrders() {
+    return new Promise((resolve, reject) => {
+      const url = `${this._apiUrl}/market/getopenorders?${this.privateParams}`
+      axios
+        .get(url, {
+          headers: {
+            apisign: this.createSignature(url),
+          },
+        })
+        .then(response => {
+          this._openOrders = response.data.result
+          resolve()
+        })
+        .catch(error => {
+          console.error('Could not get Bittrex orders.')
+          reject(error)
+        })
+    })
+  }
+  get privateParams() {
+    const params = {
+      apikey: this._publicKey,
+      nonce: new Date().getTime(),
+    }
+    return encodeQueryData(params)
   }
   formatBalances(balances) {
     const newBal = []
@@ -129,6 +149,7 @@ module.exports = class Bittrex extends Exchange {
         })
     })
   }
+
   formatOrderBook(book) {
     const newBook = [
       {

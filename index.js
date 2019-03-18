@@ -1,7 +1,7 @@
 require('dotenv').config()
 const Arbitrage = require('./src/Arbitrage')
 const Bittrex = require('./api/Bittrex')
-const StellarDex = require('./api/StellarDex')
+const StellarDEX = require('./api/StellarDEX')
 
 run = async () => {
   try {
@@ -11,6 +11,20 @@ run = async () => {
       .addMarket('sdex-XLM')
       .min(10000)
       .execute(false)
+
+    // const b = new Bittrex({
+    //   asset: 'MOBI',
+    //   base: 'BTC',
+    // })
+
+    // const s = new StellarDEX({
+    //   asset: 'MOBI',
+    //   base: 'XLM',
+    // })
+
+    // await s.getOpenOrders()
+
+    // console.log(s.openOrders)
 
   } catch (error) {
     console.error(error)
