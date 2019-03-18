@@ -10,10 +10,18 @@ run = async () => {
       .addMarket('bittrex-BTC')
       .addMarket('sdex-XLM')
       .min(1000)
-      .execute(false)
-
+      .execute(true)
   } catch (error) {
     console.error(error)
   }
+  await timer(10000)
+  run()
 }
 run()
+
+const timer = time => {
+  return new Promise((resolve, reject) => {
+    console.log(`Waiting ${time}ms...`)
+    setTimeout(() => resolve(), time)
+  })
+}

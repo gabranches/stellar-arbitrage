@@ -19,7 +19,6 @@ module.exports = class TradeBuilder {
   }
   min(min) {
     this._min = min
-    this._max = min * 10
     return this
   }
   execute(exec) {

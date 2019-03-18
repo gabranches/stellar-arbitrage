@@ -6,7 +6,7 @@ module.exports = class Exchange {
       this._asset = options.asset
       this._base = options.base
       this._min = options.min
-      this._max = options.max || this._min * 10
+      this._max = options.max || this._min * 2
       this._fee = options.fee || 0
       this._tag = options.tag
     })
@@ -100,7 +100,7 @@ module.exports = class Exchange {
     return { weightedPrice: total / totalAmount, totalAmount: totalAmount }
   }
   checkOpenOrders() {
-    if (this.openOrders.length > 0) throw Error('Orders open.')
+    if (this.openOrders.length > 0) throw Error(`Orders open on ${this._tag}.`)
   }
   get tag() {
     return this._tag
