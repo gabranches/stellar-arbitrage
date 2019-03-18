@@ -84,7 +84,7 @@ module.exports = class Bittrex extends Exchange {
         })
     })
   }
-  getOpenOrders() {
+  fetchOpenOrders() {
     return new Promise((resolve, reject) => {
       const url = `${this._apiUrl}/market/getopenorders?${this.privateParams}`
       axios

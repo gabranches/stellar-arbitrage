@@ -99,13 +99,12 @@ module.exports = class StellarDex extends Exchange {
     }
     return stellar.Operation.manageOffer(offer)
   }
-  getOpenOrders() {
+  fetchOpenOrders() {
     return new Promise((resolve, reject) => {
       this._server
         .offers('accounts', this._publicKey)
         .call()
         .then(offers => {
-          console.log(offers)
           this._openOrders = offers.records
           resolve()
         })

@@ -58,7 +58,7 @@ module.exports = class Arbitrage {
             tag: tag,
           })
           this._markets.push(xch)
-          initArr.push(xch.init(this._asset))
+          initArr.push(xch.init())
         })
         await Promise.all(initArr)
         resolve(this)

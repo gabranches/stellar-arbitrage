@@ -14,8 +14,10 @@ module.exports = class Exchange {
   init() {
     return new Promise(async (resolve, reject) => {
       try {
+        await this.fetchOpenOrders()
+        this.checkOpenOrders()
         await this.fetchBalances()
-        this.logBalances()
+        await this.logBalances()
         await this.fetchOrderBook()
 
         resolve()
@@ -96,6 +98,9 @@ module.exports = class Exchange {
       totalAmount += order.amount
     })
     return { weightedPrice: total / totalAmount, totalAmount: totalAmount }
+  }
+  checkOpenOrders() {
+    if (this.openOrders.length > 0) throw Error('Orders open.')
   }
   get tag() {
     return this._tag

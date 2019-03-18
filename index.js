@@ -9,7 +9,7 @@ run = async () => {
       .asset('MOBI')
       .addMarket('bittrex-BTC')
       .addMarket('sdex-XLM')
-      .min(10000)
+      .min(1000)
       .execute(false)
 
     // const b = new Bittrex({
@@ -22,7 +22,7 @@ run = async () => {
     //   base: 'XLM',
     // })
 
-    // await s.getOpenOrders()
+    // await s.fetchOpenOrders()
 
     // console.log(s.openOrders)
 
