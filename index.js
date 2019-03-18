@@ -12,20 +12,6 @@ run = async () => {
       .min(1000)
       .execute(false)
 
-    // const b = new Bittrex({
-    //   asset: 'MOBI',
-    //   base: 'BTC',
-    // })
-
-    // const s = new StellarDEX({
-    //   asset: 'MOBI',
-    //   base: 'XLM',
-    // })
-
-    // await s.fetchOpenOrders()
-
-    // console.log(s.openOrders)
-
   } catch (error) {
     console.error(error)
   }
