@@ -95,7 +95,7 @@ module.exports = class TradeBuilder {
     }
     action.profit =
       action.buy.amount + action.buy.fee + action.sell.fee - action.sell.amount
-    if (action.profit < 0) {
+    if (action.profit < 50) {
       action.execute = false
       action.notes.push('No profit.')
     }
