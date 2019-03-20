@@ -8,10 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/src/index.mjs",
-            "runtimeArgs": [
-                "--experimental-modules"
-            ]
+            "program": "${workspaceFolder}/index.js"
         }
     ]
 }

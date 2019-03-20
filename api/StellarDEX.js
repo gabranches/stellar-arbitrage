@@ -31,19 +31,17 @@ module.exports = class StellarDex extends Exchange {
     })
   }
   fetchBalances() {
-    return new Promise((resolve, reject) => {
-      this._server
-        .accounts()
-        .accountId(this._publicKey)
-        .call()
-        .then(res => {
-          this._balances = this.formatBalances(res.balances)
-          resolve()
-        })
-        .catch(error => {
-          reject(error)
-        })
-    })
+    this._server
+      .accounts()
+      .accountId(this._publicKey)
+      .call()
+      .then(res => {
+        this._balances = this.formatBalances(res.balances)
+        return Promise.resolve()
+      })
+      .catch(error => {
+        return Promise.reject(error)
+      })
   }
   formatBalances(balances) {
     const newBal = []
