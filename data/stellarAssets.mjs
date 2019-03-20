@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   {
     asset_code: 'MOBI',
     asset_issuer: 'GA6HCMBLTZS5VYYBCATRBRZ3BZJMAFUDKYYF6AH6MVCMGWMRDNSWJPIH',

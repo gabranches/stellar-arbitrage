@@ -1,8 +1,8 @@
-const axios = require('axios')
-const Crypto = require('crypto')
-const Exchange = require('./Exchange')
+import axios from 'axios'
+import { createHmac } from 'crypto'
+import { Exchange } from './Exchange'
 
-module.exports = class Bittrex extends Exchange {
+export class BittrexExchange extends Exchange {
   constructor(options = {}) {
     options.fee = 0.0025
     super(options)
@@ -122,7 +122,7 @@ module.exports = class Bittrex extends Exchange {
     return newBal
   }
   createSignature(url) {
-    return Crypto.createHmac('sha512', this._privateKey)
+    return createHmac('sha512', this._privateKey)
       .update(url)
       .digest('hex')
   }

@@ -1,8 +1,8 @@
-const stellar = require('stellar-sdk')
-const stellarAssets = require('../data/stellarAssets')
-const Exchange = require('./Exchange')
+import stellar from 'stellar-sdk'
+import { Exchange } from './Exchange'
+import stellarAssets from '../data/stellarAssets.mjs'
 
-module.exports = class StellarDex extends Exchange {
+export class StellarExchange extends Exchange {
   constructor(options = {}) {
     super(options)
     this._name = 'StellarDex'
@@ -31,17 +31,19 @@ module.exports = class StellarDex extends Exchange {
     })
   }
   fetchBalances() {
-    this._server
-      .accounts()
-      .accountId(this._publicKey)
-      .call()
-      .then(res => {
-        this._balances = this.formatBalances(res.balances)
-        return Promise.resolve()
-      })
-      .catch(error => {
-        return Promise.reject(error)
-      })
+    return new Promise((resolve, reject) => {
+      this._server
+        .accounts()
+        .accountId(this._publicKey)
+        .call()
+        .then(res => {
+          this._balances = this.formatBalances(res.balances)
+          resolve()
+        })
+        .catch(error => {
+          reject(error)
+        })
+    })
   }
   formatBalances(balances) {
     const newBal = []

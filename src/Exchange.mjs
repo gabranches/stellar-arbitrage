@@ -1,6 +1,6 @@
-const _ = require('lodash')
+import _ from 'lodash'
 
-module.exports = class Exchange {
+export class Exchange {
   constructor(options) {
     Object.keys(options).forEach(key => {
       this._asset = options.asset

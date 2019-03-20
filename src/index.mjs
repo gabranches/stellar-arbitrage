@@ -1,8 +1,7 @@
-require('dotenv').config()
-const Arbitrage = require('./src/Arbitrage')
-const Bittrex = require('./api/Bittrex')
-const StellarDEX = require('./api/StellarDEX')
+import dotenv from 'dotenv'
+import { Arbitrage } from './Arbitrage'
 
+dotenv.config()
 
 const timer = time => {
   return new Promise((resolve, reject) => {
@@ -11,7 +10,7 @@ const timer = time => {
   })
 }
 
-run = async () => {
+const run = async () => {
   try {
     await timer(10000)
     await new Arbitrage()
@@ -19,7 +18,7 @@ run = async () => {
       .addMarket('bittrex-BTC')
       .addMarket('sdex-XLM')
       .min(1000)
-      .execute(true)
+      .execute(false)
   } catch (error) {
     console.error(error)
   }

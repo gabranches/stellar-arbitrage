@@ -1,7 +1,7 @@
-const _ = require('lodash')
-const axios = require('axios')
+import _ from 'lodash'
+import axios from 'axios'
 
-module.exports = class Coinmarketcap {
+export class CoinMarketCap {
   constructor() {
     this._privateKey = process.env.COINMARKETCAP_PRIVATE_KEY
     this._apiUrl =

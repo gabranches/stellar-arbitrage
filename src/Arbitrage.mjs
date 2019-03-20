@@ -1,8 +1,8 @@
-const exchanges = require('./exchanges')
-const _ = require('lodash')
-const TradeBuilder = require('./TradeBuilder')
+import exchanges from './exchanges.mjs'
+import _ from 'lodash'
+import { TradeBuilder } from './TradeBuilder.mjs'
 
-module.exports = class Arbitrage {
+export class Arbitrage {
   constructor() {
     this._marketTags = []
     this._markets = []
