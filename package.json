@@ -14,10 +14,11 @@
     "lodash": "^4.17.11",
     "stellar-sdk": "^0.14.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node --experimental-modules src/index.mjs"
   },
   "author": "",
   "license": "ISC"
