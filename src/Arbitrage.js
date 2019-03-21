@@ -4,7 +4,8 @@ import { TradeBuilder } from './TradeBuilder'
 
 export class Arbitrage {
   constructor() {
-    this._markets = new Map()
+    this._exchanges = []
+    this._markets = []
     this._cmc = new exchanges.cmc()
     ;(async () => {
       await this._cmc.fetchData()
@@ -16,9 +17,13 @@ export class Arbitrage {
   }
   addMarket(id) {
     const [tag, base] = id.split('-')
-    const Market = _.find(exchanges, { tag: tag }).market
-    const market = new Market(this._asset, base)
-    this._markets.set(id, market)
+    const exchangeObj = _.find(exchanges, { tag: tag })
+    // Test
+    if (!exchangeObj) throw Error('Market tag does not exist.')
+    const market = new exchangeObj.Market(this._asset, base)
+    const exchange = new exchangeObj.Exchange()
+    this._exchanges.push(exchange)
+    this._markets.push(market)
     return this
   }
   min(min) {
@@ -31,7 +36,10 @@ export class Arbitrage {
   execute(exec) {
     return new Promise(async (resolve, reject) => {
       try {
-        await this.init()
+        // Initialize exchanges
+        await this._exchanges[0].init()
+        await this._exchanges[1].init()
+
         const trade1 = this.trade()
           .sell(this._markets[0].tag)
           .buy(this._markets[1].tag)

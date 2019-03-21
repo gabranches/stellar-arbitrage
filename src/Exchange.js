@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-export class Exchange {
+export default class Exchange {
   constructor(options) {
     Object.keys(options).forEach(key => {
       this._asset = options.asset
@@ -12,6 +12,7 @@ export class Exchange {
     })
   }
   init() {
+    console.log(`${this._name} init()`)
     return new Promise(async (resolve, reject) => {
       try {
         await this.fetchOpenOrders()
@@ -19,7 +20,6 @@ export class Exchange {
         await this.fetchBalances()
         await this.logBalances()
         await this.fetchOrderBook()
-
         resolve()
       } catch (error) {
         reject(error)

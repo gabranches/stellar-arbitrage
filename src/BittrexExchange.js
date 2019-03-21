@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { createHmac } from 'crypto'
-import { Exchange } from './Exchange'
+import Exchange from './Exchange'
 import { encodeQueryData, renameKey } from './utils'
 
-export class BittrexExchange extends Exchange {
+export default class BittrexExchange extends Exchange {
   constructor(options = {}) {
     options.fee = 0.0025
     super(options)
