@@ -1,8 +1,9 @@
 import OrderBook from "./OrderBook";
 
 export default class StellarOrderBook extends OrderBook {
-  constructor() {
-    
+  constructor(data) {
+    this._orderBook = this.formatOrderBook(data)
+    this._summary = this.getSummary(this._orderBook)
   }
   formatOrderBook(book) {
     book.bids.forEach(order => {
@@ -15,7 +16,7 @@ export default class StellarOrderBook extends OrderBook {
       order.amount = Number(order.amount)
       delete order.price_r
     })
-    return Exchange.sortOrderBook([
+    return OrderBook.sortOrderBook([
       {
         side: 'bids',
         orders: book.asks,

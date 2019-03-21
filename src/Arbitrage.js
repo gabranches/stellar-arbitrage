@@ -1,6 +1,7 @@
 import exchanges from './exchanges'
 import _ from 'lodash'
 import { TradeBuilder } from './TradeBuilder'
+import StellarExchange from './StellarExchange'
 
 export class Arbitrage {
   constructor() {
@@ -17,13 +18,18 @@ export class Arbitrage {
   }
   addMarket(id) {
     const [tag, base] = id.split('-')
-    const exchangeObj = _.find(exchanges, { tag: tag })
-    // Test
-    if (!exchangeObj) throw Error('Market tag does not exist.')
-    const market = new exchangeObj.Market(this._asset, base)
-    const exchange = new exchangeObj.Exchange()
+    let exchange
+    switch (tag) {
+      case 'sdex':
+        exchange = new StellarExchange({ asset: this._asset, base })
+        break
+      case 'bittrex':
+        exchange = new BittrexExchange({ asset: this._asset, base })
+        break
+      default:
+        throw Error('Market tag does not exist.')
+    }
     this._exchanges.push(exchange)
-    this._markets.push(market)
     return this
   }
   min(min) {
@@ -39,7 +45,6 @@ export class Arbitrage {
         // Initialize exchanges
         await this._exchanges[0].init()
         await this._exchanges[1].init()
-
         const trade1 = this.trade()
           .sell(this._markets[0].tag)
           .buy(this._markets[1].tag)

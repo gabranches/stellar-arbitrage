@@ -1,17 +1,20 @@
 import stellar from 'stellar-sdk'
 import Exchange from './Exchange'
-import stellarAssets from '../data/stellarAssets'
+import StellarMarket from './StellarMarket';
 
 export default class StellarExchange extends Exchange {
   constructor(options = {}) {
+    options.tag = 'sdex'
+    options.name = 'Stellar Decentralized Exchange'
+    options.fee = 0
+    options.apiUrl = 'https://api.bittrex.com/api/v1.1'
     super(options)
-    this._name = 'StellarDex'
     this._privateKey = process.env.STELLAR_PRIVATE_KEY
     this._sourceKeypair = stellar.Keypair.fromSecret(this._privateKey)
     this._publicKey = this._sourceKeypair.publicKey()
-    this._apiUrl = 'https://horizon.stellar.org'
     this._server = new stellar.Server(this._apiUrl)
     this._base = options.base || 'XLM'
+    this._market = new StellarMarket(this._asset)
   }
   fetchBalances() {
     return new Promise((resolve, reject) => {
@@ -39,12 +42,6 @@ export default class StellarExchange extends Exchange {
     })
     return newBal
   }
-  getAsset(asset_code) {
-    const asset = stellarAssets.filter(a => a.asset_code === asset_code)[0]
-    if (asset) return asset
-    throw Error(`Could not find asset ${asset_code}`)
-  }
-
   createTrade(trade, amount) {
     let selling, buying, price
     if (trade.action === 'SELL') {

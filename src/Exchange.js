@@ -3,12 +3,12 @@ import _ from 'lodash'
 export default class Exchange {
   constructor(options) {
     Object.keys(options).forEach(key => {
-      this._asset = options.asset
-      this._base = options.base
       this._min = options.min
       this._max = options.max || this._min * 2
       this._fee = options.fee || 0
       this._tag = options.tag
+      this._name = options.name
+      this._apiUrl = options.apiUrl
     })
   }
   init() {
@@ -19,7 +19,7 @@ export default class Exchange {
         this.checkOpenOrders()
         await this.fetchBalances()
         await this.logBalances()
-        await this.fetchOrderBook()
+        await this._market.init()
         resolve()
       } catch (error) {
         reject(error)

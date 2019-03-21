@@ -1,24 +1,12 @@
 export default class OrderBook {
-  constructor() {}
-  getSummary(b) {
-    let book = _.cloneDeep(b)
+  constructor() {
+  }
+  getSummary() {
+    let book = _.cloneDeep(this._orderBook)
     book.forEach(side => {
       side.orders = this.getSummaryAmounts(side.orders)
     })
     return this.weightedBook(book)
-  }
-  weightedBook(book) {
-    book.forEach(side => {
-      if (side.side == 'asks') {
-        side.orderPrice = _.maxBy(side.orders, 'price').price
-      } else {
-        side.orderPrice = _.minBy(side.orders, 'price').price
-      }
-      const w = this.getWeightedPrice(side.orders)
-      side.weightedPrice = w.weightedPrice
-      side.totalAmount = w.totalAmount
-    })
-    return book
   }
   getWeightedPrice(orders) {
     let total = 0
@@ -48,6 +36,19 @@ export default class OrderBook {
         amount: order.amount,
       })
       if (totalAmount > this._min && totalAmount < this._max) return true
+    })
+    return book
+  }
+  weightedBook(book) {
+    book.forEach(side => {
+      if (side.side == 'asks') {
+        side.orderPrice = _.maxBy(side.orders, 'price').price
+      } else {
+        side.orderPrice = _.minBy(side.orders, 'price').price
+      }
+      const w = this.getWeightedPrice(side.orders)
+      side.weightedPrice = w.weightedPrice
+      side.totalAmount = w.totalAmount
     })
     return book
   }

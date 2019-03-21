@@ -1,21 +1,22 @@
-import Market from "./Market";
+import Market from './Market'
+import StellarOrderBook from './StellarOrderBook'
 
 export default class StellarMarket extends Market {
-  constructor() {
-    
+  constructor(asset, base = 'XLM') {
+    super(asset, base)
+    this._tag = 'sdex'
   }
   fetchOrderBook() {
-    const asset = this.getAsset(this._asset)
+    const stellarAsset = this.getAsset(this._asset)
     return new Promise((resolve, reject) => {
       this._server
         .orderbook(
           new stellar.Asset.native(),
-          new stellar.Asset(asset.asset_code, asset.asset_issuer)
+          new stellar.Asset(stellarAsset.asset_code, stellarAsset.asset_issuer)
         )
         .call()
         .then(res => {
-          this._orderBook = this.formatOrderBook(res)
-          this._summary = this.getSummary(this._orderBook)
+          this._orderBook = new StellarOrderBook(res)
           resolve()
         })
         .catch(error => reject(error))
@@ -38,5 +39,10 @@ export default class StellarMarket extends Market {
         reject(error)
       }
     })
+  }
+  getAsset() {
+    const asset = stellarAssets.filter(a => a.asset_code === this._asset)[0]
+    if (asset) return asset
+    throw Error(`Could not find asset ${this._asset}`)
   }
 }

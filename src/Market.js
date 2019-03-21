@@ -1,6 +1,18 @@
 export default class Market {
-  constructor() {
-
+  constructor(asset, base) {
+    this._asset = asset
+    this._base = base
+  }
+  init() {
+    console.log(`${this._tag}-${this._asset}/${this._base} init()`)
+    return new Promise(async (resolve, reject) => {
+      try {
+        await this.fetchOrderBook()
+        resolve()
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
   get asset() {
     return this._asset || Error('Pair not set.')

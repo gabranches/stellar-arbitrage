@@ -2,16 +2,18 @@ import axios from 'axios'
 import { createHmac } from 'crypto'
 import Exchange from './Exchange'
 import { encodeQueryData, renameKey } from './utils'
+import BittrexMarket from './BittrexMarket';
 
 export default class BittrexExchange extends Exchange {
   constructor(options = {}) {
+    options.tag = 'bittrex'
+    options.name = 'Bittrex',
     options.fee = 0.0025
+    options.apiUrl = 'https://api.bittrex.com/api/v1.1'
     super(options)
-    this._name = 'Bittrex'
     this._publicKey = process.env.BITTREX_PUBLIC_KEY
     this._privateKey = process.env.BITTREX_PRIVATE_KEY
-    this._apiUrl = 'https://api.bittrex.com/api/v1.1'
-    this._orderBookType = 'both'
+    this._market = new BittrexMarket(this._asset, this._base)
   }
   fetchBalances() {
     return new Promise((resolve, reject) => {
