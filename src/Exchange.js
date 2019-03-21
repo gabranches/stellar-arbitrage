@@ -38,93 +38,21 @@ export class Exchange {
     }
     return this._balances
   }
-  static sortOrderBook(book) {
-    book.forEach(side => {
-      if (side.side === 'bids') {
-        side.orders = _.orderBy(side.orders, ['price'], ['desc'])
-      } else {
-        side.orders = _.orderBy(side.orders, ['price'], ['asc'])
-      }
-    })
-    return book
-  }
-  getSummary(b) {
-    let book = _.cloneDeep(b)
-    book.forEach(side => {
-      side.orders = this.getSummaryAmounts(side.orders)
-    })
-    return this.weightedBook(book)
-  }
-  getSummaryAmounts(orders) {
-    let totalAmount = 0
-    let lastAmount = 0
-    const book = []
-    orders.some(order => {
-      lastAmount = totalAmount
-      totalAmount += order.amount
-      if (totalAmount > this._max) {
-        book.push({
-          price: order.price,
-          amount: this._max - lastAmount,
-        })
-        return true
-      }
-      book.push({
-        price: order.price,
-        amount: order.amount,
-      })
-      if (totalAmount > this._min && totalAmount < this._max) return true
-    })
-    return book
-  }
-  weightedBook(book) {
-    book.forEach(side => {
-      if (side.side == 'asks') {
-        side.orderPrice = _.maxBy(side.orders, 'price').price
-      } else {
-        side.orderPrice = _.minBy(side.orders, 'price').price
-      }
-      const w = this.getWeightedPrice(side.orders)
-      side.weightedPrice = w.weightedPrice
-      side.totalAmount = w.totalAmount
-    })
-    return book
-  }
-  getWeightedPrice(orders) {
-    let total = 0
-    let totalAmount = 0
-    orders.forEach(order => {
-      total += order.price * order.amount
-      totalAmount += order.amount
-    })
-    return { weightedPrice: total / totalAmount, totalAmount: totalAmount }
+
+  logBalances() {
+    console.log('------------------------')
+    console.log(`${this._name} Balances`)
+    console.log('------------------------')
+    console.log(this._balances)
   }
   checkOpenOrders() {
     if (this.openOrders.length > 0) throw Error(`Orders open on ${this._tag}.`)
-  }
-  get tag() {
-    return this._tag
   }
   get fee() {
     return this._fee
   }
   get name() {
     return this._name || Error('Name not set.')
-  }
-  get asset() {
-    return this._asset || Error('Pair not set.')
-  }
-  get base() {
-    return this._base || Error('Base not set.')
-  }
-  get summary() {
-    return this._summary || Error('No summary.')
-  }
-  get orderBook() {
-    if (!this._orderBook) {
-      throw Error(`No order book for ${this._name}.`)
-    }
-    return this._orderBook
   }
   get ready() {
     if (!this._openOffers) return false
@@ -135,11 +63,5 @@ export class Exchange {
   }
   get openOrders() {
     return this._openOrders
-  }
-  logBalances() {
-    console.log('------------------------')
-    console.log(`${this._name} Balances`)
-    console.log('------------------------')
-    console.log(this._balances)
   }
 }

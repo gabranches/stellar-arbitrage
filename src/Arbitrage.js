@@ -4,8 +4,7 @@ import { TradeBuilder } from './TradeBuilder'
 
 export class Arbitrage {
   constructor() {
-    this._marketTags = []
-    this._markets = []
+    this._markets = new Map()
     this._cmc = new exchanges.cmc()
     ;(async () => {
       await this._cmc.fetchData()
@@ -15,8 +14,11 @@ export class Arbitrage {
     this._asset = asset
     return this
   }
-  addMarket(market) {
-    this._marketTags.push(market)
+  addMarket(id) {
+    const [tag, base] = id.split('-')
+    const Market = _.find(exchanges, { tag: tag }).market
+    const market = new Market(this._asset, base)
+    this._markets.set(id, market)
     return this
   }
   min(min) {

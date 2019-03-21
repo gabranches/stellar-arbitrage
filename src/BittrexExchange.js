@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { createHmac } from 'crypto'
 import { Exchange } from './Exchange'
+import { encodeQueryData, renameKey } from './utils'
 
 export class BittrexExchange extends Exchange {
   constructor(options = {}) {
@@ -11,57 +12,6 @@ export class BittrexExchange extends Exchange {
     this._privateKey = process.env.BITTREX_PRIVATE_KEY
     this._apiUrl = 'https://api.bittrex.com/api/v1.1'
     this._orderBookType = 'both'
-  }
-  fetchOrderBook() {
-    return new Promise((resolve, reject) => {
-      axios
-        .get(`${this._apiUrl}/public/getorderbook`, {
-          params: {
-            market: `${this._base}-${this._asset}`,
-            type: this._orderBookType,
-          },
-        })
-        .then(response => {
-          this._orderBook = this.formatOrderBook(response.data.result)
-          this._summary = this.getSummary(this._orderBook)
-          resolve()
-        })
-        .catch(error => {
-          console.error('Could not get Bittrex order book.')
-          reject(error)
-        })
-    })
-  }
-  limitOrder(order) {
-    return new Promise((resolve, reject) => {
-      const params = {
-        apikey: this._publicKey,
-        nonce: new Date().getTime(),
-        market: `${order.base}-${order.asset}`,
-        quantity: order.amount,
-        rate: order.price,
-      }
-      const url = `${
-        this._apiUrl
-      }/market/${order.type.toLowerCase()}limit?${encodeQueryData(params)}`
-      axios
-        .get(url, {
-          headers: {
-            apisign: this.createSignature(url),
-          },
-        })
-        .then(response => {
-          if (response.data.success) {
-            resolve(response.data)
-          } else {
-            reject(Error('Failed to place order on Bittrex.'))
-          }
-        })
-        .catch(e => {
-          console.error('Could not place buy limit order on Bittrex.')
-          reject(error)
-        })
-    })
   }
   fetchBalances() {
     return new Promise((resolve, reject) => {
@@ -103,13 +53,6 @@ export class BittrexExchange extends Exchange {
         })
     })
   }
-  get privateParams() {
-    const params = {
-      apikey: this._publicKey,
-      nonce: new Date().getTime(),
-    }
-    return encodeQueryData(params)
-  }
   formatBalances(balances) {
     const newBal = []
     balances.forEach(item => {
@@ -149,7 +92,6 @@ export class BittrexExchange extends Exchange {
         })
     })
   }
-
   formatOrderBook(book) {
     const newBook = [
       {
@@ -169,20 +111,12 @@ export class BittrexExchange extends Exchange {
     })
     return Exchange.sortOrderBook(newBook)
   }
-}
-function renameKey(o, old_key, new_key) {
-  if (old_key !== new_key) {
-    Object.defineProperty(
-      o,
-      new_key,
-      Object.getOwnPropertyDescriptor(o, old_key)
-    )
-    delete o[old_key]
+  get privateParams() {
+    const params = {
+      apikey: this._publicKey,
+      nonce: new Date().getTime(),
+    }
+    return encodeQueryData(params)
   }
 }
-function encodeQueryData(data) {
-  const ret = []
-  for (let d in data)
-    ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]))
-  return ret.join('&')
-}
+
