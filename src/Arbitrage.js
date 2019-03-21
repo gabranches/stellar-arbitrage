@@ -1,6 +1,6 @@
-import exchanges from './exchanges.mjs'
+import exchanges from './exchanges'
 import _ from 'lodash'
-import { TradeBuilder } from './TradeBuilder.mjs'
+import { TradeBuilder } from './TradeBuilder'
 
 export class Arbitrage {
   constructor() {

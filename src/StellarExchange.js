@@ -1,6 +1,6 @@
 import stellar from 'stellar-sdk'
 import { Exchange } from './Exchange'
-import stellarAssets from '../data/stellarAssets.mjs'
+import stellarAssets from '../data/stellarAssets'
 
 export class StellarExchange extends Exchange {
   constructor(options = {}) {

@@ -14,10 +14,14 @@
     "lodash": "^4.17.11",
     "stellar-sdk": "^0.14.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --experimental-modules src/index.mjs"
+    "start": "node index"
   },
   "author": "",
   "license": "ISC"
