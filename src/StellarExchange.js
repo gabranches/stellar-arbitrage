@@ -1,24 +1,21 @@
 import stellar from 'stellar-sdk'
 import Exchange from './Exchange'
 import StellarMarket from './StellarMarket';
+import StellarAPI from './StellarAPI';
 
 export default class StellarExchange extends Exchange {
   constructor(options = {}) {
     options.tag = 'sdex'
     options.name = 'Stellar Decentralized Exchange'
     options.fee = 0
-    options.apiUrl = 'https://api.bittrex.com/api/v1.1'
     super(options)
-    this._privateKey = process.env.STELLAR_PRIVATE_KEY
-    this._sourceKeypair = stellar.Keypair.fromSecret(this._privateKey)
-    this._publicKey = this._sourceKeypair.publicKey()
-    this._server = new stellar.Server(this._apiUrl)
     this._base = options.base || 'XLM'
-    this._market = new StellarMarket(this._asset)
+    this._api = new StellarAPI()
+    this._market = new StellarMarket(this._asset, this._api)
   }
   fetchBalances() {
     return new Promise((resolve, reject) => {
-      this._server
+      this._api.server
         .accounts()
         .accountId(this._publicKey)
         .call()
@@ -42,26 +39,6 @@ export default class StellarExchange extends Exchange {
     })
     return newBal
   }
-  createTrade(trade, amount) {
-    let selling, buying, price
-    if (trade.action === 'SELL') {
-      selling = new stellar.Asset(trade.asset_code, trade.asset_issuer)
-      buying = new stellar.Asset('XLM', null)
-      price = trade.action_price - 0.001
-    } else {
-      selling = new stellar.Asset('XLM', null)
-      buying = new stellar.Asset(trade.asset_code, trade.asset_issuer)
-      amount = amount * trade.action_price
-      price = 1 / trade.action_price - 0.001
-    }
-    const offer = {
-      selling,
-      buying,
-      amount: amount.toFixed(7).toString(),
-      price: price.toFixed(7).toString(),
-    }
-    return stellar.Operation.manageOffer(offer)
-  }
   fetchOpenOrders() {
     return new Promise((resolve, reject) => {
       this._server
@@ -72,30 +49,6 @@ export default class StellarExchange extends Exchange {
           resolve()
         })
         .catch(error => reject(error))
-    })
-  }
-  signOperation(xdr) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        console.log('Signing Stellar transaction...')
-        stellar.Network.usePublicNetwork()
-        const account = await this._server.loadAccount(this._publicKey)
-        const fee = await this._server.fetchBaseFee()
-        const transaction = new stellar.TransactionBuilder(account, { fee })
-          .addOperation(xdr)
-          .setTimeout(30)
-          .build()
-        transaction.sign(this._sourceKeypair)
-        const res = await this._server.submitTransaction(transaction)
-        if (res._links.transaction.href) {
-          console.log('Stellar transaction signed.')
-          resolve(res)
-        } else {
-          reject(Error('Failed to sign Stellar transaction.'))
-        }
-      } catch (error) {
-        reject(error)
-      }
     })
   }
 }

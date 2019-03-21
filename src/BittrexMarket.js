@@ -1,13 +1,14 @@
 import Market from './Market'
+import axios from 'axios'
 
 export default class BittrexMarket extends Market {
-  constructor() {
-    super()
+  constructor(asset, base, api) {
+    super(asset, base, api)
   }
   fetchOrderBook() {
     return new Promise((resolve, reject) => {
       axios
-        .get(`${this._apiUrl}/public/getorderbook`, {
+        .get(`${this._api.url}/public/getorderbook`, {
           params: {
             market: `${this._base}-${this._asset}`,
             type: this._orderBookType,
@@ -34,7 +35,7 @@ export default class BittrexMarket extends Market {
         rate: order.price,
       }
       const url = `${
-        this._apiUrl
+        this._api.url
       }/market/${order.type.toLowerCase()}limit?${encodeQueryData(params)}`
       axios
         .get(url, {

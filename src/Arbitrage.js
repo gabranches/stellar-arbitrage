@@ -1,16 +1,16 @@
-import exchanges from './exchanges'
 import _ from 'lodash'
 import { TradeBuilder } from './TradeBuilder'
 import StellarExchange from './StellarExchange'
+import BittrexExchange from './BittrexExchange'
 
 export class Arbitrage {
   constructor() {
     this._exchanges = []
     this._markets = []
-    this._cmc = new exchanges.cmc()
-    ;(async () => {
-      await this._cmc.fetchData()
-    })()
+    // this._cmc = new exchanges.cmc()
+    // ;(async () => {
+    //   await this._cmc.fetchData()
+    // })()
   }
   asset(asset) {
     this._asset = asset
@@ -45,6 +45,7 @@ export class Arbitrage {
         // Initialize exchanges
         await this._exchanges[0].init()
         await this._exchanges[1].init()
+        // Initialize trades
         const trade1 = this.trade()
           .sell(this._markets[0].tag)
           .buy(this._markets[1].tag)
@@ -60,28 +61,28 @@ export class Arbitrage {
       }
     })
   }
-  init() {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const initArr = []
-        this._marketTags.forEach(tag => {
-          let [name, base] = tag.split('-')
-          const xch = new exchanges[name]({
-            asset: this._asset,
-            base: base,
-            min: this._min,
-            tag: tag,
-          })
-          this._markets.push(xch)
-          initArr.push(xch.init())
-        })
-        await Promise.all(initArr)
-        resolve(this)
-      } catch (error) {
-        reject(error)
-      }
-    })
-  }
+  // init() {
+  //   return new Promise(async (resolve, reject) => {
+  //     try {
+  //       const initArr = []
+  //       this._marketTags.forEach(tag => {
+  //         let [name, base] = tag.split('-')
+  //         const xch = new exchanges[name]({
+  //           asset: this._asset,
+  //           base: base,
+  //           min: this._min,
+  //           tag: tag,
+  //         })
+  //         this._markets.push(xch)
+  //         initArr.push(xch.init())
+  //       })
+  //       await Promise.all(initArr)
+  //       resolve(this)
+  //     } catch (error) {
+  //       reject(error)
+  //     }
+  //   })
+  // }
   findProfit(x1, x2) {
     const x1Rate = this._cmc.price(x1.base, 'USD')
     const x2Rate = this._cmc.price(x2.base, 'USD')

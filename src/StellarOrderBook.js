@@ -2,6 +2,7 @@ import OrderBook from "./OrderBook";
 
 export default class StellarOrderBook extends OrderBook {
   constructor(data) {
+    super()
     this._orderBook = this.formatOrderBook(data)
     this._summary = this.getSummary(this._orderBook)
   }

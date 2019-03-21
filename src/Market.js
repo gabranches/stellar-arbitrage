@@ -1,7 +1,8 @@
 export default class Market {
-  constructor(asset, base) {
+  constructor(asset, base, api) {
     this._asset = asset
     this._base = base
+    this._api = api
   }
   init() {
     console.log(`${this._tag}-${this._asset}/${this._base} init()`)

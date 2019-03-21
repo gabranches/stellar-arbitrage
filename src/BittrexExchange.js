@@ -3,21 +3,20 @@ import { createHmac } from 'crypto'
 import Exchange from './Exchange'
 import { encodeQueryData, renameKey } from './utils'
 import BittrexMarket from './BittrexMarket';
+import BittrexAPI from './BittrexAPI';
 
 export default class BittrexExchange extends Exchange {
   constructor(options = {}) {
     options.tag = 'bittrex'
     options.name = 'Bittrex',
     options.fee = 0.0025
-    options.apiUrl = 'https://api.bittrex.com/api/v1.1'
     super(options)
-    this._publicKey = process.env.BITTREX_PUBLIC_KEY
-    this._privateKey = process.env.BITTREX_PRIVATE_KEY
-    this._market = new BittrexMarket(this._asset, this._base)
+    this._api = new BittrexAPI()
+    this._market = new BittrexMarket(this._asset, this._base, this._api)
   }
   fetchBalances() {
     return new Promise((resolve, reject) => {
-      const url = `${this._apiUrl}/account/getbalances?${this.privateParams}`
+      const url = `${this._api.url}/account/getbalances?${this._api.privateParams}`
       axios
         .get(url, {
           headers: {
@@ -38,7 +37,7 @@ export default class BittrexExchange extends Exchange {
   }
   fetchOpenOrders() {
     return new Promise((resolve, reject) => {
-      const url = `${this._apiUrl}/market/getopenorders?${this.privateParams}`
+      const url = `${this._api.url}/market/getopenorders?${this._api.privateParams}`
       axios
         .get(url, {
           headers: {
@@ -67,7 +66,7 @@ export default class BittrexExchange extends Exchange {
     return newBal
   }
   createSignature(url) {
-    return createHmac('sha512', this._privateKey)
+    return createHmac('sha512', this._api.privateKey)
       .update(url)
       .digest('hex')
   }
@@ -78,7 +77,7 @@ export default class BittrexExchange extends Exchange {
         nonce: new Date().getTime(),
         uuid: id,
       }
-      const url = `${this._apiUrl}/account/getorder?${encodeQueryData(params)}`
+      const url = `${this._api.url}/account/getorder?${encodeQueryData(params)}`
       axios
         .get(url, {
           headers: {
@@ -113,12 +112,6 @@ export default class BittrexExchange extends Exchange {
     })
     return Exchange.sortOrderBook(newBook)
   }
-  get privateParams() {
-    const params = {
-      apikey: this._publicKey,
-      nonce: new Date().getTime(),
-    }
-    return encodeQueryData(params)
-  }
+
 }
 

@@ -1,15 +1,15 @@
 import Market from './Market'
 import StellarOrderBook from './StellarOrderBook'
+import stellar from 'stellar-sdk'
 
 export default class StellarMarket extends Market {
-  constructor(asset, base = 'XLM') {
-    super(asset, base)
-    this._tag = 'sdex'
+  constructor(asset, api) {
+    super(asset, 'XLM', api)
   }
   fetchOrderBook() {
     const stellarAsset = this.getAsset(this._asset)
     return new Promise((resolve, reject) => {
-      this._server
+      this._api.server
         .orderbook(
           new stellar.Asset.native(),
           new stellar.Asset(stellarAsset.asset_code, stellarAsset.asset_issuer)
@@ -33,12 +33,32 @@ export default class StellarMarket extends Market {
       }
       const xdr = this.createTrade(trade, order.amount)
       try {
-        const res = await this.signOperation(xdr)
+        const res = await this._api.signOperation(xdr)
         resolve(res)
       } catch (error) {
         reject(error)
       }
     })
+  }
+  createTrade(trade, amount) {
+    let selling, buying, price
+    if (trade.action === 'SELL') {
+      selling = new stellar.Asset(trade.asset_code, trade.asset_issuer)
+      buying = new stellar.Asset('XLM', null)
+      price = trade.action_price - 0.001
+    } else {
+      selling = new stellar.Asset('XLM', null)
+      buying = new stellar.Asset(trade.asset_code, trade.asset_issuer)
+      amount = amount * trade.action_price
+      price = 1 / trade.action_price - 0.001
+    }
+    const offer = {
+      selling,
+      buying,
+      amount: amount.toFixed(7).toString(),
+      price: price.toFixed(7).toString(),
+    }
+    return stellar.Operation.manageOffer(offer)
   }
   getAsset() {
     const asset = stellarAssets.filter(a => a.asset_code === this._asset)[0]
