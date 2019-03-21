@@ -1,14 +1,12 @@
 import _ from 'lodash'
 
 export default class Exchange {
-  constructor(options) {
-    Object.keys(options).forEach(key => {
-      this._min = options.min
-      this._max = options.max || this._min * 2
-      this._fee = options.fee || 0
-      this._tag = options.tag
-      this._name = options.name
-      this._api = options.api
+  constructor(params) {
+    Object.keys(params).forEach(key => {
+      this._fee = params.fee || 0
+      this._tag = params.tag
+      this._name = params.name
+      this._api = params.api
     })
   }
   init() {
@@ -63,5 +61,8 @@ export default class Exchange {
   }
   get openOrders() {
     return this._openOrders
+  }
+  get market() {
+    return this._market
   }
 }

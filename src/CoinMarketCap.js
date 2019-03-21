@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import axios from 'axios'
 
-export class CoinMarketCap {
+export default class CoinMarketCap {
   constructor() {
     this._privateKey = process.env.COINMARKETCAP_PRIVATE_KEY
     this._apiUrl =

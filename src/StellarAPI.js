@@ -4,11 +4,11 @@ import API from './API'
 export default class StellarAPI extends API {
   constructor() {
     const params = {
-      url: 'https://api.bittrex.com/api/v1.1',
+      url: 'https://horizon.stellar.org',
       privateKey: process.env.STELLAR_PRIVATE_KEY,
     }
     super(params)
-    this._sourceKeypair = stellar.Keypair.fromSecret(this._privateKey)
+    this._sourceKeypair = stellar.Keypair.fromSecret(this.privateKey)
     this._publicKey = this._sourceKeypair.publicKey()
     this._server = new stellar.Server(this._apiUrl)
   }

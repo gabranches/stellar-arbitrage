@@ -3,8 +3,8 @@ import axios from 'axios'
 import BittrexOrderBook from './BittrexOrderBook';
 
 export default class BittrexMarket extends Market {
-  constructor(options) {
-    super(options)
+  constructor(params) {
+    super(params)
   }
   fetchOrderBook() {
     return new Promise((resolve, reject) => {

@@ -1,6 +1,7 @@
 import Market from './Market'
 import StellarOrderBook from './StellarOrderBook'
 import stellar from 'stellar-sdk'
+import stellarAssets from '../data/stellarAssets'
 
 export default class StellarMarket extends Market {
   constructor(params) {

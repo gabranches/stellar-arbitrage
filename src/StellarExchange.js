@@ -16,7 +16,7 @@ export default class StellarExchange extends Exchange {
     return new Promise((resolve, reject) => {
       this._api.server
         .accounts()
-        .accountId(this._publicKey)
+        .accountId(this._api.publicKey)
         .call()
         .then(res => {
           this._balances = this.formatBalances(res.balances)
@@ -40,8 +40,8 @@ export default class StellarExchange extends Exchange {
   }
   fetchOpenOrders() {
     return new Promise((resolve, reject) => {
-      this._server
-        .offers('accounts', this._publicKey)
+      this._api.server
+        .offers('accounts', this._api.publicKey)
         .call()
         .then(offers => {
           this._openOrders = offers.records

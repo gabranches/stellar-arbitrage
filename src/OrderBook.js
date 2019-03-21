@@ -3,14 +3,13 @@ import _ from 'lodash'
 export default class OrderBook {
   constructor(orderBook) {
     this._orderBook = orderBook
-    this._summary = this.getSummary(orderBook)
   }
-  getSummary() {
+  buildSummary() {
     let book = _.cloneDeep(this._orderBook)
     book.forEach(side => {
       side.orders = this.getSummaryAmounts(side.orders)
     })
-    return this.weightedBook(book)
+    this._summary = this.weightedBook(book)
   }
   getWeightedPrice(orders) {
     let total = 0
@@ -66,7 +65,20 @@ export default class OrderBook {
     })
     return book
   }
+  set min(x) {
+    this._min = x
+    this._max = x * 2
+  }
   get orderBook() {
     return this._orderBook
+  }
+  get summary() {
+    return this._summary
+  }
+  get min() {
+    return this._min
+  }
+  get max() {
+    return this._max
   }
 }

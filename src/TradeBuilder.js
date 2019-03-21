@@ -1,29 +1,32 @@
 import _ from 'lodash'
 
 export class TradeBuilder {
-  constructor(markets, cmc) {
-    this._markets = markets
+  constructor(cmc) {
     this._cmc = cmc
   }
-  sell(tag) {
-    this._sellMarket = _.find(this._markets, { tag: tag })
+  sell(exchange) {
+    this._sellExchange = exchange
+    this._sellMarket = exchange.market
     return this
   }
-  buy(tag) {
-    this._buyMarket = _.find(this._markets, { tag: tag })
-    return this
-  }
-  asset() {
-    this._asset = asset
+  buy(exchange) {
+    this._buyExchange = exchange
+    this._buyMarket = exchange.market
     return this
   }
   min(min) {
     this._min = min
+    this._max = min * 2
     return this
   }
+
   execute(exec) {
     return new Promise(async (resolve, reject) => {
       this._asset = this._sellMarket.asset
+      this._sellMarket.orderBook.min = this._min
+      this._sellMarket.orderBook.buildSummary()
+      this._buyMarket.orderBook.min = this._min
+      this._buyMarket.orderBook.buildSummary()
       this._trade = this.buildTrade()
       this.logSummary()
       const sellOrder = this.buildOrder('SELL', this._trade.sell)
@@ -59,8 +62,8 @@ export class TradeBuilder {
   buildTrade() {
     const sell = this._sellMarket
     const buy = this._buyMarket
-    const sellSummary = _.find(sell.summary, { side: 'bids' })
-    const buySummary = _.find(buy.summary, { side: 'asks' })
+    const sellSummary = _.find(sell.orderBook.summary, { side: 'bids' })
+    const buySummary = _.find(buy.orderBook.summary, { side: 'asks' })
     const sellRate = this._cmc.price(sell.base, 'USD')
     const buyRate = this._cmc.price(buy.base, 'USD')
     const amount = Math.min(sellSummary.totalAmount, buySummary.totalAmount)
@@ -69,22 +72,22 @@ export class TradeBuilder {
         asset: sell.asset,
         market: sell.tag,
         amount: amount,
-        available: sell.balance(sell.asset),
+        available: this._sellExchange.balance(sell.asset),
         price: sellSummary.weightedPrice,
         priceUSD: sellRate * sellSummary.weightedPrice,
         totalUSD: amount * sellRate * sellSummary.weightedPrice,
-        fee: amount * sellRate * sellSummary.weightedPrice * sell.fee,
+        fee: amount * sellRate * sellSummary.weightedPrice * this._sellExchange.fee,
       },
       buy: {
         asset: buy.asset,
         market: buy.tag,
         amount: amount,
         amountBase: amount * buySummary.weightedPrice,
-        available: buy.balance(buy.base),
+        available: this._buyExchange.balance(buy.base),
         price: buySummary.weightedPrice,
         priceUSD: buyRate * buySummary.weightedPrice,
         totalUSD: amount * buyRate * buySummary.weightedPrice,
-        fee: amount * buyRate * buySummary.weightedPrice * buy.fee,
+        fee: amount * buyRate * buySummary.weightedPrice * this._buyExchange.fee,
       },
       execute: true,
       profit: null,
@@ -99,12 +102,12 @@ export class TradeBuilder {
     }
     if (action.sell.available < action.sell.amount) {
       action.execute = false
-      action.notes.push(`Insufficient ${action.sell.asset} to sell.`)
+      action.notes.push(`Insufficient ${sell.asset} to sell.`)
     }
     if (action.buy.available < action.buy.amountBase) {
       action.execute = false
       action.notes.push(
-        `Insufficient ${action.buy.market.split('-')[1]} to buy.`
+        `Insufficient ${buy.base} to buy.`
       )
     }
     return action
