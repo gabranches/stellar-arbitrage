@@ -6,13 +6,13 @@ import BittrexMarket from './BittrexMarket';
 import BittrexAPI from './BittrexAPI';
 
 export default class BittrexExchange extends Exchange {
-  constructor(options = {}) {
-    options.tag = 'bittrex'
-    options.name = 'Bittrex',
-    options.fee = 0.0025
-    super(options)
-    this._api = new BittrexAPI()
-    this._market = new BittrexMarket(this._asset, this._base, this._api)
+  constructor(params = {}) {
+    params.tag = 'bittrex'
+    params.name = 'Bittrex',
+    params.fee = 0.0025
+    params.api = new BittrexAPI()
+    super(params)
+    this._market = new BittrexMarket(params)
   }
   fetchBalances() {
     return new Promise((resolve, reject) => {
@@ -93,25 +93,7 @@ export default class BittrexExchange extends Exchange {
         })
     })
   }
-  formatOrderBook(book) {
-    const newBook = [
-      {
-        side: 'bids',
-        orders: book.buy,
-      },
-      {
-        side: 'asks',
-        orders: book.sell,
-      },
-    ]
-    newBook.forEach(side => {
-      side.orders.forEach(order => {
-        renameKey(order, 'Quantity', 'amount')
-        renameKey(order, 'Rate', 'price')
-      })
-    })
-    return Exchange.sortOrderBook(newBook)
-  }
+
 
 }
 

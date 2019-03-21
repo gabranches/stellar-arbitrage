@@ -3,8 +3,9 @@ import StellarOrderBook from './StellarOrderBook'
 import stellar from 'stellar-sdk'
 
 export default class StellarMarket extends Market {
-  constructor(asset, api) {
-    super(asset, 'XLM', api)
+  constructor(params) {
+    params.base = 'XLM'
+    super(params)
   }
   fetchOrderBook() {
     const stellarAsset = this.getAsset(this._asset)

@@ -1,5 +1,9 @@
+import _ from 'lodash'
+
 export default class OrderBook {
-  constructor() {
+  constructor(orderBook) {
+    this._orderBook = orderBook
+    this._summary = this.getSummary(orderBook)
   }
   getSummary() {
     let book = _.cloneDeep(this._orderBook)
@@ -61,5 +65,8 @@ export default class OrderBook {
       }
     })
     return book
+  }
+  get orderBook() {
+    return this._orderBook
   }
 }

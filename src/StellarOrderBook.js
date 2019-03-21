@@ -2,11 +2,9 @@ import OrderBook from "./OrderBook";
 
 export default class StellarOrderBook extends OrderBook {
   constructor(data) {
-    super()
-    this._orderBook = this.formatOrderBook(data)
-    this._summary = this.getSummary(this._orderBook)
+    super(StellarOrderBook.formatOrderBook(data)) 
   }
-  formatOrderBook(book) {
+  static formatOrderBook(book) {
     book.bids.forEach(order => {
       order.price = 1 / order.price
       order.amount = Number(order.amount)

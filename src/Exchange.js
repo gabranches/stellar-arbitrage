@@ -8,7 +8,7 @@ export default class Exchange {
       this._fee = options.fee || 0
       this._tag = options.tag
       this._name = options.name
-      this._apiUrl = options.apiUrl
+      this._api = options.api
     })
   }
   init() {

@@ -1,11 +1,12 @@
 export default class Market {
-  constructor(asset, base, api) {
-    this._asset = asset
-    this._base = base
-    this._api = api
+  constructor(params) {
+    this._asset = params.asset
+    this._base = params.base
+    this._api = params.api
+    this._tag = params.tag
   }
   init() {
-    console.log(`${this._tag}-${this._asset}/${this._base} init()`)
+    console.log(`${this.tag}-${this.asset}/${this.base} init()`)
     return new Promise(async (resolve, reject) => {
       try {
         await this.fetchOrderBook()
@@ -31,6 +32,6 @@ export default class Market {
     return this._summary || Error('No summary.')
   }
   get tag() {
-    return this._tag
+    return this._tag || Error('Tag not set.')
   }
 }

@@ -4,14 +4,13 @@ import StellarMarket from './StellarMarket';
 import StellarAPI from './StellarAPI';
 
 export default class StellarExchange extends Exchange {
-  constructor(options = {}) {
-    options.tag = 'sdex'
-    options.name = 'Stellar Decentralized Exchange'
-    options.fee = 0
-    super(options)
-    this._base = options.base || 'XLM'
-    this._api = new StellarAPI()
-    this._market = new StellarMarket(this._asset, this._api)
+  constructor(params = {}) {
+    params.tag = 'sdex'
+    params.name = 'Stellar Decentralized Exchange'
+    params.fee = 0
+    params.api = new StellarAPI()
+    super(params)
+    this._market = new StellarMarket(params)
   }
   fetchBalances() {
     return new Promise((resolve, reject) => {
