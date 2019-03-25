@@ -1,8 +1,8 @@
-import OrderBook from "./OrderBook";
+import OrderBook from './OrderBook'
 
 export default class StellarOrderBook extends OrderBook {
   constructor(data) {
-    super(StellarOrderBook.formatOrderBook(data)) 
+    super(StellarOrderBook.formatOrderBook(data))
   }
   static formatOrderBook(book) {
     book.bids.forEach(order => {
@@ -12,7 +12,7 @@ export default class StellarOrderBook extends OrderBook {
     })
     book.asks.forEach(order => {
       order.price = 1 / order.price
-      order.amount = Number(order.amount)
+      order.amount = Number(order.amount) / order.price
       delete order.price_r
     })
     return OrderBook.sortOrderBook([

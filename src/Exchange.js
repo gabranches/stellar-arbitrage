@@ -10,7 +10,6 @@ export default class Exchange {
     })
   }
   init() {
-    console.log(`${this._name} init()`)
     return new Promise(async (resolve, reject) => {
       try {
         await this.fetchOpenOrders()

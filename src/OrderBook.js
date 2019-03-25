@@ -65,6 +65,9 @@ export default class OrderBook {
     })
     return book
   }
+  log() {
+    console.log(this._orderBook)
+  }
   set min(x) {
     this._min = x
     this._max = x * 2

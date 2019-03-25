@@ -31,14 +31,16 @@ export class TradeBuilder {
       this.logSummary()
       const sellOrder = this.buildOrder('SELL', this._trade.sell)
       const buyOrder = this.buildOrder('BUY', this._trade.buy)
+      console.log('-----------------')
+      console.log(sellOrder)
+      console.log('-----------------')
+      console.log(buyOrder)
       try {
         if (exec) {
           if (this._trade.execute) {
             console.log('------------------------')
             console.log('EXECUTE')
             console.log('------------------------')
-            console.log(sellOrder)
-            console.log(buyOrder)
             const pS = this._sellMarket.limitOrder(sellOrder)
             const pB = this._buyMarket.limitOrder(buyOrder)
             await Promise.all([pS, pB])
@@ -54,9 +56,9 @@ export class TradeBuilder {
     return {
       type: type,
       asset: o.asset,
-      base: o.market.split('-')[1],
+      base: o.base,
       amount: o.amount,
-      price: o.price,
+      price: o.orderPrice,
     }
   }
   buildTrade() {
@@ -70,33 +72,35 @@ export class TradeBuilder {
     const action = {
       sell: {
         asset: sell.asset,
+        base: sell.base,
         market: sell.tag,
         amount: amount,
         available: this._sellExchange.balance(sell.asset),
-        price: sellSummary.weightedPrice,
-        priceUSD: sellRate * sellSummary.weightedPrice,
-        totalUSD: amount * sellRate * sellSummary.weightedPrice,
-        fee: amount * sellRate * sellSummary.weightedPrice * this._sellExchange.fee,
+        weightedPrice: sellSummary.weightedPrice,
+        orderPrice: sellSummary.orderPrice,
+        fee: amount * this._sellExchange.fee,
       },
       buy: {
         asset: buy.asset,
+        base: buy.base,
         market: buy.tag,
         amount: amount,
         amountBase: amount * buySummary.weightedPrice,
         available: this._buyExchange.balance(buy.base),
-        price: buySummary.weightedPrice,
-        priceUSD: buyRate * buySummary.weightedPrice,
-        totalUSD: amount * buyRate * buySummary.weightedPrice,
-        fee: amount * buyRate * buySummary.weightedPrice * this._buyExchange.fee,
+        weightedPrice: buySummary.weightedPrice,
+        orderPrice: buySummary.orderPrice,
+        fee: amount * this._buyExchange.fee,
       },
       execute: true,
-      profit: null,
+      profitUSD: null,
       notes: [],
     }
-    action.profit =
-      action.sell.totalUSD -
-      (action.buy.totalUSD + action.buy.fee + action.sell.fee)
-    if (action.profit < 0) {
+    action.profitUSD =
+      action.sell.weightedPrice * action.sell.amount * sellRate -
+      (action.buy.weightedPrice * action.buy.amount * buyRate +
+        action.buy.fee +
+        action.sell.fee)
+    if (action.profitUSD < 0) {
       action.execute = false
       action.notes.push('No profit.')
     }
@@ -106,9 +110,7 @@ export class TradeBuilder {
     }
     if (action.buy.available < action.buy.amountBase) {
       action.execute = false
-      action.notes.push(
-        `Insufficient ${buy.base} to buy.`
-      )
+      action.notes.push(`Insufficient ${buy.base} to buy.`)
     }
     return action
   }

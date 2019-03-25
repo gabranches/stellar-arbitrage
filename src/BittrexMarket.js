@@ -1,6 +1,7 @@
 import Market from './Market'
 import axios from 'axios'
-import BittrexOrderBook from './BittrexOrderBook';
+import BittrexOrderBook from './BittrexOrderBook'
+import { encodeQueryData } from './utils'
 
 export default class BittrexMarket extends Market {
   constructor(params) {
@@ -55,5 +56,10 @@ export default class BittrexMarket extends Market {
           reject(error)
         })
     })
+  }
+  createSignature(url) {
+    return createHmac('sha512', this._api.privateKey)
+      .update(url)
+      .digest('hex')
   }
 }
