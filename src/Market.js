@@ -6,7 +6,6 @@ export default class Market {
     this._tag = params.tag
   }
   init() {
-    console.log(`${this.tag}-${this.asset}/${this.base} init()`)
     return new Promise(async (resolve, reject) => {
       try {
         await this.fetchOrderBook()
