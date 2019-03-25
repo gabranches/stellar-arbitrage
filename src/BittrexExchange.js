@@ -1,26 +1,26 @@
 import axios from 'axios'
-import { createHmac } from 'crypto'
 import Exchange from './Exchange'
-import { encodeQueryData, renameKey } from './utils'
-import BittrexMarket from './BittrexMarket';
-import BittrexAPI from './BittrexAPI';
+import { encodeQueryData } from './utils'
+import BittrexMarket from './BittrexMarket'
+import BittrexAPI from './BittrexAPI'
 
 export default class BittrexExchange extends Exchange {
   constructor(params = {}) {
     params.tag = 'bittrex'
-    params.name = 'Bittrex',
-    params.fee = 0.0025
+    ;(params.name = 'Bittrex'), (params.fee = 0.0025)
     params.api = new BittrexAPI()
     super(params)
     this._market = new BittrexMarket(params)
   }
   fetchBalances() {
     return new Promise((resolve, reject) => {
-      const url = `${this._api.url}/account/getbalances?${this._api.privateParams}`
+      const url = `${this._api.url}/account/getbalances?${
+        this._api.privateParams
+      }`
       axios
         .get(url, {
           headers: {
-            apisign: this.createSignature(url),
+            apisign: this._api.createSignature(url),
           },
         })
         .then(response => {
@@ -37,11 +37,13 @@ export default class BittrexExchange extends Exchange {
   }
   fetchOpenOrders() {
     return new Promise((resolve, reject) => {
-      const url = `${this._api.url}/market/getopenorders?${this._api.privateParams}`
+      const url = `${this._api.url}/market/getopenorders?${
+        this._api.privateParams
+      }`
       axios
         .get(url, {
           headers: {
-            apisign: this.createSignature(url),
+            apisign: this._api.createSignature(url),
           },
         })
         .then(response => {
@@ -65,11 +67,6 @@ export default class BittrexExchange extends Exchange {
     })
     return newBal
   }
-  createSignature(url) {
-    return createHmac('sha512', this._api.privateKey)
-      .update(url)
-      .digest('hex')
-  }
   getOrder(id) {
     return new Promise((resolve, reject) => {
       const params = {
@@ -81,7 +78,7 @@ export default class BittrexExchange extends Exchange {
       axios
         .get(url, {
           headers: {
-            apisign: this.createSignature(url),
+            apisign: this._api.createSignature(url),
           },
         })
         .then(response => {
@@ -93,7 +90,4 @@ export default class BittrexExchange extends Exchange {
         })
     })
   }
-
-
 }
-

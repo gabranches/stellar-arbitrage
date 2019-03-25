@@ -41,7 +41,7 @@ export default class BittrexMarket extends Market {
       axios
         .get(url, {
           headers: {
-            apisign: this.createSignature(url),
+            apisign: this._api.createSignature(url),
           },
         })
         .then(response => {
@@ -57,9 +57,5 @@ export default class BittrexMarket extends Market {
         })
     })
   }
-  createSignature(url) {
-    return createHmac('sha512', this._api.privateKey)
-      .update(url)
-      .digest('hex')
-  }
+  
 }

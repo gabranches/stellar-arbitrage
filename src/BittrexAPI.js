@@ -1,5 +1,6 @@
 import API from './API'
 import { encodeQueryData } from './utils'
+import { createHmac } from 'crypto'
 
 export default class BittrexAPI extends API {
   constructor() {
@@ -9,6 +10,11 @@ export default class BittrexAPI extends API {
       privateKey: process.env.BITTREX_PRIVATE_KEY,
     }
     super(params)
+  }
+  createSignature(url) {
+    return createHmac('sha512', this.privateKey)
+      .update(url)
+      .digest('hex')
   }
   get privateParams() {
     const params = {
